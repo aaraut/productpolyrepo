@@ -1,0 +1,26 @@
+services: 
+  configserver: 
+    container_name: configserver
+    depends_on: 
+      serviceregistry: 
+        condition: service_healthy
+    environment: 
+      - "EUREKA_SERVER_ADDRES=http://serviceregistry:8761/eureka"
+    healthcheck: 
+      interval: 10s
+      retries: 5
+      test: 
+        - CMD
+        - curl
+        - "-f"
+        - "http://serviceregistry:8761/actuator/health"
+      timeout: 5s
+    image: "alekhraut/configserver:0.0.1"
+    ports: 
+        ["-'9296:9296'"]
+  serviceregistry: 
+    container_name: serviceregistry
+    image: "alekhraut/serviceregistry:0.0.1"
+    ports: 
+        ["-'8761:8761'"]
+version: "3"
